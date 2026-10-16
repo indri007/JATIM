@@ -1,0 +1,12 @@
+{
+  "testbed_version": "1.0.0",
+  "random_seed": 42,
+  "trials_per_class": 100,
+  "currency": "IDR",
+  "regional_bank": "Bank Jatim",
+  "regulatory_frameworks": [
+    "POJK 11/POJK.03/2022",
+    "PADK OJK 1/PADK.03/2026",
+    "NIST SP 800-207"
+  ]
+}

@@ -1,0 +1,17 @@
+# Large binaries and archives
+*.zip
+*.tar.gz
+*.pdf
+BankJatim_Laporan_2021-2025/
+
+# Environments and caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+
+# Credentials and secrets
+.env
+*token*
+*.key

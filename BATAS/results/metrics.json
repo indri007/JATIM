@@ -1,0 +1,26 @@
+{
+  "Baseline 1: System Prompt Guard": {
+    "attack_success_rate_percent": 26.0,
+    "asr_95_ci": "\u00b18.60%",
+    "benign_task_utility_percent": 40.0,
+    "human_approval_load_percent": 0.0,
+    "mean_latency_ms": 48.9,
+    "latency_95_ci_ms": "48.9 \u00b1 0.85"
+  },
+  "Baseline 2: Intent Classifier": {
+    "attack_success_rate_percent": 45.0,
+    "asr_95_ci": "\u00b19.75%",
+    "benign_task_utility_percent": 40.0,
+    "human_approval_load_percent": 0.0,
+    "mean_latency_ms": 113.64,
+    "latency_95_ci_ms": "113.64 \u00b1 1.64"
+  },
+  "Proposed: BATAS (Zero Trust Scoping)": {
+    "attack_success_rate_percent": 0.0,
+    "asr_95_ci": "\u00b10.00%",
+    "benign_task_utility_percent": 48.0,
+    "human_approval_load_percent": 38.0,
+    "mean_latency_ms": 78.43,
+    "latency_95_ci_ms": "78.43 \u00b1 0.81"
+  }
+}

@@ -1,0 +1,24 @@
+version: "2026-03"
+bank_name: "Bank Jatim (PT Bank Pembangunan Daerah Jawa Timur Tbk)"
+framework: "BATAS - NIST SP 800-207 Zero Trust Engine"
+regulations:
+  - id: "POJK 11/POJK.03/2022"
+    description: "Penyelenggaraan Teknologi Informasi oleh Bank Umum"
+  - id: "PADK OJK 1/PADK.03/2026"
+    description: "Panduan Penilaian dan Tata Kelola Keamanan Agen AI Otonom Perbankan"
+
+authority_boundaries:
+  retail_p2p:
+    max_amount_per_tx: 10000000 # IDR 10 Juta
+    allowed_scopes: ["transfer:retail_p2p"]
+    step_up_auth_required: false
+  retail_high_value:
+    min_amount: 10000001
+    step_up_auth_required: true
+    step_up_method: "CUSTOMER_BIOMETRIC_PIN"
+  treasury_kasda:
+    account_prefix: "REK-KASDA"
+    step_up_auth_required: true
+    dual_approval_required: true
+    step_up_method: "REGIONAL_TREASURER_DUAL_KEY"
+    disallowed_for_autonomous_agents: true
