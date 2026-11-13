@@ -4,6 +4,7 @@
 **Author:** Indri Anjar Kartika Sari  
 **Affiliations:** IDS Digital College / UPN "Veteran" Jawa Timur / Purwadhika JCAI  
 **Repository:** [https://github.com/indri007/JATIM](https://github.com/indri007/JATIM)  
+**Live Demo:** [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://bankjatim.streamlit.app/) [https://bankjatim.streamlit.app/](https://bankjatim.streamlit.app/)  
 
 ---
 
