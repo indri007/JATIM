@@ -13,6 +13,11 @@ authors = [{ name = "Indri Anjar Kartika Sari", email = "indri.cs2026@ids.ac.id"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "streamlit>=1.35.0",
+    "pandas>=2.0.0",
+    "openpyxl>=3.1.0",
+    "plotly>=5.18.0",
+    "tabulate>=0.9.0",
     "fastapi>=0.109.0",
     "uvicorn>=0.27.0",
     "pydantic>=2.6.0",

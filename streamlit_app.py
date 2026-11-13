@@ -6,8 +6,13 @@ import time
 import numpy as np
 import pandas as pd
 import streamlit as st
-import plotly.express as px
-import plotly.graph_objects as go
+
+try:
+    import plotly.express as px
+    import plotly.graph_objects as go
+    HAS_PLOTLY = True
+except ImportError:
+    HAS_PLOTLY = False
 
 # -----------------------------------------------------------------------------
 # Page Configuration
@@ -261,15 +266,21 @@ with tab_overview:
             chart_type = st.radio("Pilih Tipe Visualisasi:", ["Line Chart Interaktif", "Bar Chart Komparatif"], horizontal=True)
             
             if chart_type == "Line Chart Interaktif":
-                fig = go.Figure()
-                fig.add_trace(go.Scatter(x=df_trend["Tahun"], y=df_trend["ROA (%)"], mode="lines+markers+text", name="ROA (%)", text=[f"{v:.2f}%" for v in df_trend["ROA (%)"]], textposition="top center", line=dict(color="#2563EB", width=3)))
-                fig.add_trace(go.Scatter(x=df_trend["Tahun"], y=df_trend["ROE (%)"], mode="lines+markers+text", name="ROE (%)", text=[f"{v:.2f}%" for v in df_trend["ROE (%)"]], textposition="bottom center", line=dict(color="#10B981", width=3)))
-                fig.update_layout(template="plotly_white", yaxis_title="Rasio (%)", hovermode="x unified", height=420)
-                st.plotly_chart(fig, use_container_width=True)
+                if HAS_PLOTLY:
+                    fig = go.Figure()
+                    fig.add_trace(go.Scatter(x=df_trend["Tahun"], y=df_trend["ROA (%)"], mode="lines+markers+text", name="ROA (%)", text=[f"{v:.2f}%" for v in df_trend["ROA (%)"]], textposition="top center", line=dict(color="#2563EB", width=3)))
+                    fig.add_trace(go.Scatter(x=df_trend["Tahun"], y=df_trend["ROE (%)"], mode="lines+markers+text", name="ROE (%)", text=[f"{v:.2f}%" for v in df_trend["ROE (%)"]], textposition="bottom center", line=dict(color="#10B981", width=3)))
+                    fig.update_layout(template="plotly_white", yaxis_title="Rasio (%)", hovermode="x unified", height=420)
+                    st.plotly_chart(fig, use_container_width=True)
+                else:
+                    st.line_chart(df_trend.set_index("Tahun")[["ROA (%)", "ROE (%)"]])
             else:
-                fig_bar = px.bar(df_trend, x="Tahun", y=["ROA (%)", "ROE (%)"], barmode="group", color_discrete_sequence=["#2563EB", "#10B981"])
-                fig_bar.update_layout(template="plotly_white", yaxis_title="Rasio (%)", height=420)
-                st.plotly_chart(fig_bar, use_container_width=True)
+                if HAS_PLOTLY:
+                    fig_bar = px.bar(df_trend, x="Tahun", y=["ROA (%)", "ROE (%)"], barmode="group", color_discrete_sequence=["#2563EB", "#10B981"])
+                    fig_bar.update_layout(template="plotly_white", yaxis_title="Rasio (%)", height=420)
+                    st.plotly_chart(fig_bar, use_container_width=True)
+                else:
+                    st.bar_chart(df_trend.set_index("Tahun")[["ROA (%)", "ROE (%)"]])
 
         with col_c2:
             st.markdown("#### 💡 Analisis & Insight Bisnis")
@@ -338,24 +349,30 @@ with tab_compare:
             df_sc = pd.DataFrame(scatter_df).dropna(subset=["ROA (%)", "ROE (%)"])
             df_sc = df_sc[(df_sc["ROA (%)"] > -10) & (df_sc["ROA (%)"] < 15) & (df_sc["ROE (%)"] > -20) & (df_sc["ROE (%)"] < 40)]
             
-            fig_sc = px.scatter(
-                df_sc, x="ROA (%)", y="ROE (%)", color="Kelompok",
-                hover_data=["Ticker", "Nama"],
-                color_discrete_map={"Bank Terpilih": "#DC2626", "Emiten Finansial Lain": "#94A3B8"},
-                title=f"Distribusi ROA vs ROE Seluruh Emiten Finansial ({selected_year})"
-            )
-            fig_sc.add_hline(y=fin_roe[selected_year].median(), line_dash="dash", line_color="#F59E0B", annotation_text="Median ROE Industri (5.16%)")
-            fig_sc.add_vline(x=fin_roa[selected_year].median(), line_dash="dash", line_color="#3B82F6", annotation_text="Median ROA Industri (1.41%)")
-            fig_sc.update_layout(template="plotly_white", height=450)
-            st.plotly_chart(fig_sc, use_container_width=True)
+            if HAS_PLOTLY:
+                fig_sc = px.scatter(
+                    df_sc, x="ROA (%)", y="ROE (%)", color="Kelompok",
+                    hover_data=["Ticker", "Nama"],
+                    color_discrete_map={"Bank Terpilih": "#DC2626", "Emiten Finansial Lain": "#94A3B8"},
+                    title=f"Distribusi ROA vs ROE Seluruh Emiten Finansial ({selected_year})"
+                )
+                fig_sc.add_hline(y=fin_roe[selected_year].median(), line_dash="dash", line_color="#F59E0B", annotation_text="Median ROE Industri (5.16%)")
+                fig_sc.add_vline(x=fin_roa[selected_year].median(), line_dash="dash", line_color="#3B82F6", annotation_text="Median ROA Industri (1.41%)")
+                fig_sc.update_layout(template="plotly_white", height=450)
+                st.plotly_chart(fig_sc, use_container_width=True)
+            else:
+                st.dataframe(df_sc[["Ticker", "Nama", "ROA (%)", "ROE (%)", "Kelompok"]], use_container_width=True)
 
         st.markdown("#### Bar Chart Komparasi Langsung")
-        fig_bars = px.bar(
-            df_comp, x="Ticker", y=["ROA (%)", "ROE (%)"], barmode="group",
-            hover_data=["Nama Perusahaan"], color_discrete_sequence=["#2563EB", "#10B981"]
-        )
-        fig_bars.update_layout(template="plotly_white", height=380)
-        st.plotly_chart(fig_bars, use_container_width=True)
+        if HAS_PLOTLY:
+            fig_bars = px.bar(
+                df_comp, x="Ticker", y=["ROA (%)", "ROE (%)"], barmode="group",
+                hover_data=["Nama Perusahaan"], color_discrete_sequence=["#2563EB", "#10B981"]
+            )
+            fig_bars.update_layout(template="plotly_white", height=380)
+            st.plotly_chart(fig_bars, use_container_width=True)
+        else:
+            st.bar_chart(df_comp.set_index("Ticker")[["ROA (%)", "ROE (%)"]])
 
         st.dataframe(df_comp.set_index("Ticker"), use_container_width=True)
 
@@ -606,15 +623,21 @@ with tab_benchmark:
     col_b_chart1, col_b_chart2 = st.columns(2)
     with col_b_chart1:
         st.markdown("##### Perbandingan Attack Success Rate (ASR) — Semakin Rendah Semakin Baik")
-        fig_asr = px.bar(df_bench, x="Konfigurasi", y="ASR_num", text="Attack Success Rate (ASR)", color="Konfigurasi", color_discrete_sequence=["#EF4444", "#F59E0B", "#10B981"])
-        fig_asr.update_layout(template="plotly_white", yaxis_title="ASR (%)", showlegend=False, height=360)
-        st.plotly_chart(fig_asr, use_container_width=True)
+        if HAS_PLOTLY:
+            fig_asr = px.bar(df_bench, x="Konfigurasi", y="ASR_num", text="Attack Success Rate (ASR)", color="Konfigurasi", color_discrete_sequence=["#EF4444", "#F59E0B", "#10B981"])
+            fig_asr.update_layout(template="plotly_white", yaxis_title="ASR (%)", showlegend=False, height=360)
+            st.plotly_chart(fig_asr, use_container_width=True)
+        else:
+            st.bar_chart(df_bench.set_index("Konfigurasi")["ASR_num"])
 
     with col_b_chart2:
         st.markdown("##### Perbandingan Latensi Overhead p50 & p95 (ms)")
-        fig_lat = px.bar(df_bench, x="Konfigurasi", y=["p50_num", "p95_num"], barmode="group", labels={"value": "Latensi (ms)", "variable": "Metrik Latensi"}, color_discrete_sequence=["#3B82F6", "#8B5CF6"])
-        fig_lat.update_layout(template="plotly_white", height=360)
-        st.plotly_chart(fig_lat, use_container_width=True)
+        if HAS_PLOTLY:
+            fig_lat = px.bar(df_bench, x="Konfigurasi", y=["p50_num", "p95_num"], barmode="group", labels={"value": "Latensi (ms)", "variable": "Metrik Latensi"}, color_discrete_sequence=["#3B82F6", "#8B5CF6"])
+            fig_lat.update_layout(template="plotly_white", height=360)
+            st.plotly_chart(fig_lat, use_container_width=True)
+        else:
+            st.bar_chart(df_bench.set_index("Konfigurasi")[["p50_num", "p95_num"]])
 
     st.dataframe(df_bench[["Konfigurasi", "Jumlah Serangan", "Serangan Berhasil", "Attack Success Rate (ASR)", f"Wilson {z_slider}% Lower", f"Wilson {z_slider}% Upper", "Latensi p50 (ms)", "Latensi p95 (ms)"]].set_index("Konfigurasi"), use_container_width=True)
 
