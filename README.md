@@ -77,17 +77,22 @@
 
 ---
 
-## 🚀 Cara Menjalankan Aplikasi & Pengujian
+## 🚀 Quick Start
+```bash
+git clone https://github.com/indri007/JATIM.git
+cd JATIM/BATAS
+bash setup_batas.sh
+opa test policies/ -v
+python3 -m pytest tests/ -v
+```
 
 ### 1. Menjalankan Dashboard Master Streamlit (Lokal)
 ```bash
-# Pasang dependensi
+cd ..
 pip install -r requirements.txt
-
-# Jalankan portal interaktif
 streamlit run streamlit_app.py
 ```
-Akses di browser: `http://localhost:8501`
+Akses di browser: `http://localhost:8501` atau via demo publik: [https://bankjatim.streamlit.app/](https://bankjatim.streamlit.app/)
 
 ### 2. Menjalankan Stack Observabilitas Docker (Grafana + Loki + Prometheus)
 ```bash
@@ -95,21 +100,21 @@ cd dashboards
 docker compose up -d
 ```
 * **Grafana Dashboard**: `http://localhost:3000` (User: `admin`, Pass: `batas2026`)
-  * Dashboard 1: *BATAS — Executive & Compliance*
-  * Dashboard 2: *BATAS — SOC AI Agent*
 * **Prometheus Metrics**: `http://localhost:9090`
 * **Streamlit Benchmark**: `http://localhost:8501`
-* **BATAS Exporter**: `http://localhost:8000/metrics`
 
-### 3. Menjalankan Pengujian Kebijakan & Invarian Saldo
-```bash
-cd BATAS
+---
 
-# Uji Kebijakan OPA Rego
-opa test policies/ -v
+## 📖 Sitasi (Citation)
+Jika Anda menggunakan paket riset, testbed, dataset, atau kebijakan BATAS ini dalam penelitian akademis, silakan gunakan format sitasi berikut:
 
-# Uji Unit Test Python (State Invariants & Prompt Injection)
-python3 -m pytest tests/ -v
+```bibtex
+@misc{jatim_batas_2026,
+  title  = {BATAS: Zero Trust Authority Boundary for Agentic AI in Banking (Bank Jatim Case)},
+  author = {Indri Anjar Kartika Sari and contributors},
+  year   = {2026},
+  url    = {https://github.com/indri007/JATIM}
+}
 ```
 
 ---
