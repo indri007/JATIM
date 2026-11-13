@@ -110,3 +110,4 @@ with col_chart2:
 st.markdown("---")
 st.subheader("🔍 Raw JSON Metrics")
 st.json(metrics)
+

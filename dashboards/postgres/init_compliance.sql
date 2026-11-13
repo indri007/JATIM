@@ -21,3 +21,4 @@ INSERT INTO compliance_controls (control_id, regulation, control_name, status, l
 ('OJK-AI-02', 'OJK AI Governance', 'Transparansi Keputusan Penolakan Transaksi (Audit Decision Reason)', 'COMPLIANT', NOW())
 ON CONFLICT (control_id) DO UPDATE 
 SET status = EXCLUDED.status, last_verified_at = EXCLUDED.last_verified_at;
+

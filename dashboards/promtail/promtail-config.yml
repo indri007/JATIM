@@ -24,3 +24,4 @@ scrape_configs:
           job: batas
           app: batas-opa
           __path__: /var/log/batas/opa*.jsonl
+

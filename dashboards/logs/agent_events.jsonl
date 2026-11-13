@@ -4,3 +4,4 @@
 {"type":"invariant_violation","agent_id":"agent-loan"}
 {"type":"anomaly","agent_id":"agent-branchless"}
 {"risk":"high","agent_id":"agent-transfer","action":"transfer_funds"}
+
