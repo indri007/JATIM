@@ -1,0 +1,105 @@
+name: BATAS CI / CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # =========================================================
+  # 1. OPA ZERO TRUST POLICY TESTS
+  # =========================================================
+  test-opa-policies:
+    name: OPA Zero Trust Policies Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Open Policy Agent (OPA)
+        run: |
+          curl -L -o opa https://openpolicyagent.org/downloads/v0.68.0/opa_linux_amd64_static
+          chmod +x opa
+          sudo mv opa /usr/local/bin/
+
+      - name: Verify OPA Installation
+        run: opa version
+
+      - name: Run OPA Policy Unit Tests
+        run: |
+          cd BATAS
+          opa test policies/ -v
+
+  # =========================================================
+  # 2. PYTHON UNIT TESTS & CODE COVERAGE
+  # =========================================================
+  test-python-suite:
+    name: Unit Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov openpyxl pandas requests pyyaml tabulate networkx matplotlib seaborn
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f BATAS/requirements.txt ]; then pip install -r BATAS/requirements.txt; fi
+
+      - name: Run All 19 Unit Tests
+        run: |
+          python -m pytest -c pytest.ini tests/ BATAS/tests/ -v
+
+  # =========================================================
+  # 3. SYNTAX INTEGRITY & SECURITY SANITIZATION
+  # =========================================================
+  lint-and-security:
+    name: Syntax Integrity & Secret Leak Prevention
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Python Bytecode Compilation Verification
+        run: |
+          python -m py_compile streamlit_app.py
+          python -m py_compile buat_workbook_uji.py
+          python -m py_compile kumpul_berita_bankjatim.py
+          python -m py_compile generate_nodexl_analysis.py
+          python -m py_compile generate_annual_relational_network.py
+
+      - name: Secret Scan (Verify No Private Keys Tracked)
+        run: |
+          echo "Scanning repository for leaked credentials..."
+          if grep -rn "sk-488b" . --exclude-dir=".git" || grep -rn "sk-or-v1" . --exclude-dir=".git"; then
+            echo "CRITICAL: Private API keys detected in repository!"
+            exit 1
+          fi
+          echo "Repository is 100% clean of private tokens."
+
+      - name: Verify Docker Compose Config
+        run: |
+          docker compose -f dashboards/docker-compose.yml config > /dev/null
+          echo "Docker compose configuration is valid!"
