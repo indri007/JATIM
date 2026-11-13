@@ -22,8 +22,8 @@ This repository contains the official replication package, synthetic testbed, OP
    - `benchmarks/`: Benchmark harness measuring Attack Success Rate (ASR), p50/p95 latency overhead, false rejection rates, and Wilson 95% confidence intervals.
    - `setup_batas.sh`: Automated turnkey shell script for setting up environments and executing benchmarks.
 
-2. **`BATAS/BATAS_MANUSCRIPT.md` & `ORIGIN_Research_Report (11).md`:**
-   - Full-length academic manuscript and ORIGIN verification report.
+2. **`BATAS/BATAS_MANUSCRIPT.md`, `ORIGIN_Research_Report (11).md`, & `PRD.md`:**
+   - Full-length academic manuscript, ORIGIN verification report, and comprehensive Product Requirements Document (PRD) for the Streamlit cloud platform.
 
 3. **`SUMBER.csv`:**
    - Verifiable SHA-256 checksums, official URLs, and file metadata for Bank Jatim (IDX: BJTM) Annual Reports (2020–2025) and Financial Reports (LFR 2023–2026).
