@@ -28,6 +28,12 @@ This repository contains the official replication package, synthetic testbed, OP
 3. **`SUMBER.csv`:**
    - Verifiable SHA-256 checksums, official URLs, and file metadata for Bank Jatim (IDX: BJTM) Annual Reports (2020–2025) and Financial Reports (LFR 2023–2026).
 
+4. **`dashboards/` — Production Observability & Evaluation Stack:**
+   - `docker-compose.yml`: Turnkey deployment for Prometheus, Grafana, Loki, PostgreSQL, OPA, and Streamlit.
+   - `grafana/executive_compliance.json`: Dashboard 1 (Executive & Compliance — PromQL, ASR, Wilson 95% CI, Invariant Violations, OJK Compliance Table).
+   - `grafana/soc_ai_agent.json`: Dashboard 2 (SOC AI Agent — PromQL + Loki LogQL, prompt injection detection, token violations).
+   - `streamlit/dashboard_benchmark.py`: Dashboard 3 (Streamlit Benchmark & Evaluation Harness).
+
 ---
 
 ### Quick Start: Running the Testbed

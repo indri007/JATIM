@@ -1,0 +1,99 @@
+version: "3.8"
+
+services:
+  # 1. Grafana Dashboard Service (Port 3000)
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: batas-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./provisioning/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
+      - ./provisioning/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./grafana:/etc/grafana/provisioning/dashboards/json:ro
+    depends_on:
+      - prometheus
+      - loki
+      - postgres
+    networks:
+      - batas-net
+
+  # 2. Prometheus Metrics Time-Series DB (Port 9090)
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: batas-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    networks:
+      - batas-net
+
+  # 3. Grafana Loki Log Aggregation (Port 3100)
+  loki:
+    image: grafana/loki:2.9.4
+    container_name: batas-loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - batas-net
+
+  # 4. PostgreSQL Relational Compliance DB (Port 5432)
+  postgres:
+    image: postgres:16-alpine
+    container_name: batas-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: batas_db
+      POSTGRES_USER: batas_user
+      POSTGRES_PASSWORD: batas_password
+    volumes:
+      - ./postgres/init_compliance.sql:/docker-entrypoint-initdb.d/init_compliance.sql:ro
+    networks:
+      - batas-net
+
+  # 5. Open Policy Agent (OPA) Engine (Port 8181)
+  opa:
+    image: openpolicyagent/opa:0.62.0
+    container_name: batas-opa
+    ports:
+      - "8181:8181"
+    volumes:
+      - ../BATAS/policies:/policies:ro
+    command:
+      - "run"
+      - "--server"
+      - "--addr=0.0.0.0:8181"
+      - "/policies"
+    networks:
+      - batas-net
+
+  # 6. Streamlit Benchmark Dashboard (Port 8501)
+  streamlit:
+    image: python:3.11-slim
+    container_name: batas-streamlit-benchmark
+    ports:
+      - "8501:8501"
+    working_dir: /app
+    volumes:
+      - ./streamlit:/app:ro
+      - ../BATAS/results:/app/BATAS/results:ro
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt &&
+             streamlit run dashboard_benchmark.py --server.port=8501 --server.address=0.0.0.0"
+    networks:
+      - batas-net
+
+networks:
+  batas-net:
+    driver: bridge

@@ -164,3 +164,4 @@ flowchart LR
 3. **Desain Responsif**:
    * **Desktop ( $\ge 1200px$ )**: Tampilan dua kolom berdampingan (*side-by-side*) untuk form input dan output PEP.
    * **Tablet & Mobile ( $< 768px$ )**: Tata letak otomatis tersusun vertikal (*single column stack*) agar mudah digulir.
+

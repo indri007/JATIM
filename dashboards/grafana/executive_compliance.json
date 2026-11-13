@@ -1,0 +1,231 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "Row 1: Security Posture, State Invariants & Incident Overview",
+      "type": "row"
+    },
+    {
+      "id": 1,
+      "title": "Attack Success Rate (ASR)",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 0.01 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        { "expr": "batas_benchmark_asr_ratio", "legendFormat": "ASR" }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Wilson 95% Confidence Interval (ASR)",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "color": { "mode": "palette-classic" }
+        }
+      },
+      "targets": [
+        { "expr": "batas_benchmark_asr_wilson_lower", "legendFormat": "Wilson Lower" },
+        { "expr": "batas_benchmark_asr_wilson_upper", "legendFormat": "Wilson Upper" }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Invariant Violations (Must be 0)",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        { "expr": "sum(increase(batas_invariant_violations_total[24h]))", "legendFormat": "Violations" }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Open Incidents",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        { "expr": "sum(batas_incidents_open_total)", "legendFormat": "Open Incidents" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 200,
+      "title": "Row 2: Enforcement Telemetry & Regulatory Control Coverage",
+      "type": "row"
+    },
+    {
+      "id": 5,
+      "title": "Policy Deny Ratio (5m Rate)",
+      "type": "gauge",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 6 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "orange", "value": 0.5 },
+              { "color": "red", "value": 0.8 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        { "expr": "sum(rate(batas_policy_decisions_total{decision=\"deny\"}[5m])) / sum(rate(batas_policy_decisions_total[5m]))", "legendFormat": "Deny Ratio" }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Token Violations (24h)",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 6 },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 10 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        { "expr": "sum(increase(batas_token_violations_total[24h]))", "legendFormat": "Token Violations" }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Control Coverage per Regulation",
+      "type": "barchart",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 6 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "color": { "mode": "palette-classic" },
+          "max": 1
+        }
+      },
+      "targets": [
+        { "expr": "sum by (regulation) (batas_control_coverage_ratio)", "legendFormat": "{{regulation}}" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 12 },
+      "id": 300,
+      "title": "Row 3: Compliance Controls Matrix (PostgreSQL)",
+      "type": "row"
+    },
+    {
+      "id": 8,
+      "title": "Compliance Controls Status (POJK 11/2022 & PADK OJK 1/2026)",
+      "type": "table",
+      "datasource": "PostgreSQL",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 13 },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT regulation, control_id, control_name, status, last_verified_at FROM compliance_controls ORDER BY regulation, control_id;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 21 },
+      "id": 400,
+      "title": "Row 4: Daily Incident Time Series Trend",
+      "type": "row"
+    },
+    {
+      "id": 9,
+      "title": "Incidents Rate Trend (per Day)",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 22 },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 15
+          }
+        }
+      },
+      "targets": [
+        { "expr": "sum(rate(batas_incidents_open_total[1h]))", "legendFormat": "Incident Rate (1h)" }
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 38,
+  "tags": ["batas", "compliance", "executive", "ojk", "bank-jatim"],
+  "time": { "from": "now-24h", "to": "now" },
+  "timepicker": { "refresh_intervals": ["5s", "10s", "30s", "1m"] },
+  "timezone": "browser",
+  "title": "1. Dashboard Executive & Compliance — BATAS (Bank Jatim)",
+  "uid": "batas-executive-compliance",
+  "version": 1
+}

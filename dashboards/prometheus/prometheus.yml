@@ -1,0 +1,25 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "batas-pep-agent"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["app:8000"]
+        labels:
+          app: "batas-agent"
+          env: "production"
+          bank: "bank-jatim"
+
+  - job_name: "batas-opa"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["opa:8181"]
+        labels:
+          app: "batas-opa"
+          env: "production"
