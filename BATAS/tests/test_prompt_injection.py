@@ -1,3 +1,4 @@
+from pathlib import Path
 import json
 import time
 import pytest
@@ -7,7 +8,10 @@ from testbed.app import BATASPEP
 
 def load_attacks():
     attacks = []
-    with open("/Users/jevin/.gemini/antigravity-ide/scratch/BATAS/dataset/attack_dev.jsonl", "r") as f:
+    dataset_path = Path(__file__).parent.parent / "dataset" / "attack_dev.jsonl"
+    if not dataset_path.exists():
+        dataset_path = Path("dataset/attack_dev.jsonl")
+    with open(dataset_path, "r") as f:
         for line in f:
             if line.strip():
                 attacks.append(json.loads(line))
