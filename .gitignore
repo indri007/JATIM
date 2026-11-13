@@ -6,12 +6,25 @@ BankJatim_Laporan_2021-2025/
 
 # Environments and caches
 .venv/
+venv/
+env/
 __pycache__/
 *.pyc
 .pytest_cache/
 .DS_Store
 
-# Credentials and secrets
+# Credentials, tokens, keys & secrets (STRICTLY PRIVATE)
 .env
+.env.*
+*.env
+dashboards/.env
 *token*
 *.key
+*.pem
+*.cert
+*.crt
+*.pfx
+id_rsa*
+secrets.toml
+.streamlit/secrets.toml
+*.secret
