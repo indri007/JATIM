@@ -103,3 +103,4 @@ jobs:
         run: |
           docker compose -f dashboards/docker-compose.yml config > /dev/null
           echo "Docker compose configuration is valid!"
+

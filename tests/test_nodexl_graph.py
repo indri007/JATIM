@@ -31,3 +31,4 @@ def test_vertices_degree_and_betweenness():
     top_v = df_vertices.sort_values(by="News Volume Count", ascending=False).iloc[0]
     assert top_v["Vertex"] == "Bisnis.com"
     assert top_v["News Volume Count"] == 38
+

@@ -14,3 +14,4 @@ def test_streamlit_app_syntax_compile():
     # py_compile compiles python file to bytecode, raising PyCompileError on syntax error
     compiled = py_compile.compile(str(APP_PATH), doraise=True)
     assert compiled is not None
+

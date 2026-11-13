@@ -38,3 +38,4 @@ def test_valid_urls():
     df = pd.read_csv(DATASET_FILE)
     for idx, url in enumerate(df["Link"]):
         assert str(url).startswith("http"), f"Invalid URL at row {idx}: {url}"
+

@@ -40,3 +40,4 @@ def test_sus_sheet_statements_count():
     assert len(statements) == 10
     # Check SUS row formula exists
     assert "SUM" in str(ws.cell(row=15, column=3).value)
+
