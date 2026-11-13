@@ -1,0 +1,22 @@
+{
+  "runs": [
+    {
+      "config": "no_guardrails",
+      "attacks": 120,
+      "success": 87,
+      "latency_ms": [120, 135, 128, 141, 150, 122, 133, 145, 138, 129]
+    },
+    {
+      "config": "input_filter_only",
+      "attacks": 120,
+      "success": 42,
+      "latency_ms": [130, 145, 138, 150, 160, 133, 142, 155, 148, 140]
+    },
+    {
+      "config": "zero_trust_batas",
+      "attacks": 120,
+      "success": 0,
+      "latency_ms": [180, 195, 188, 200, 210, 185, 192, 205, 198, 190]
+    }
+  ]
+}

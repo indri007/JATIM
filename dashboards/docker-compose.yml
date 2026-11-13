@@ -1,99 +1,80 @@
-version: "3.8"
+version: "3.9"
 
 services:
-  # 1. Grafana Dashboard Service (Port 3000)
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: batas-prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prom-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=15d"
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:3.2.0
+    container_name: batas-loki
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    restart: unless-stopped
+
+  promtail:
+    image: grafana/promtail:3.2.0
+    container_name: batas-promtail
+    volumes:
+      - ./promtail/promtail-config.yml:/etc/promtail/config.yml:ro
+      - ./logs:/var/log/batas:ro
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    restart: unless-stopped
+
   grafana:
-    image: grafana/grafana:10.4.0
+    image: grafana/grafana:11.2.2
     container_name: batas-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GF_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_ADMIN_PASSWORD:-batas2026}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/executive_compliance.json
+    volumes:
+      - ./provisioning:/etc/grafana/provisioning:ro
+      - ./grafana:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
     ports:
       - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_USERS_ALLOW_SIGN_UP=false
-    volumes:
-      - ./provisioning/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
-      - ./provisioning/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
-      - ./grafana:/etc/grafana/provisioning/dashboards/json:ro
     depends_on:
       - prometheus
       - loki
-      - postgres
-    networks:
-      - batas-net
+    restart: unless-stopped
 
-  # 2. Prometheus Metrics Time-Series DB (Port 9090)
-  prometheus:
-    image: prom/prometheus:v2.51.0
-    container_name: batas-prometheus
-    ports:
-      - "9090:9090"
+  exporter:
+    build: ./exporter
+    container_name: batas-exporter
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.enable-lifecycle"
-    networks:
-      - batas-net
-
-  # 3. Grafana Loki Log Aggregation (Port 3100)
-  loki:
-    image: grafana/loki:2.9.4
-    container_name: batas-loki
+      - ./logs:/var/log/batas:ro
+      - ./benchmarks:/data/benchmarks:ro
     ports:
-      - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
-    networks:
-      - batas-net
+      - "8000:8000"
+    restart: unless-stopped
 
-  # 4. PostgreSQL Relational Compliance DB (Port 5432)
-  postgres:
-    image: postgres:16-alpine
-    container_name: batas-postgres
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: batas_db
-      POSTGRES_USER: batas_user
-      POSTGRES_PASSWORD: batas_password
-    volumes:
-      - ./postgres/init_compliance.sql:/docker-entrypoint-initdb.d/init_compliance.sql:ro
-    networks:
-      - batas-net
-
-  # 5. Open Policy Agent (OPA) Engine (Port 8181)
-  opa:
-    image: openpolicyagent/opa:0.62.0
-    container_name: batas-opa
-    ports:
-      - "8181:8181"
-    volumes:
-      - ../BATAS/policies:/policies:ro
-    command:
-      - "run"
-      - "--server"
-      - "--addr=0.0.0.0:8181"
-      - "/policies"
-    networks:
-      - batas-net
-
-  # 6. Streamlit Benchmark Dashboard (Port 8501)
   streamlit:
-    image: python:3.11-slim
-    container_name: batas-streamlit-benchmark
+    build: ./streamlit
+    container_name: batas-streamlit
+    volumes:
+      - ./benchmarks:/app/benchmarks:ro
     ports:
       - "8501:8501"
-    working_dir: /app
-    volumes:
-      - ./streamlit:/app:ro
-      - ../BATAS/results:/app/BATAS/results:ro
-    command: >
-      sh -c "pip install --no-cache-dir -r requirements.txt &&
-             streamlit run dashboard_benchmark.py --server.port=8501 --server.address=0.0.0.0"
-    networks:
-      - batas-net
+    restart: unless-stopped
 
-networks:
-  batas-net:
-    driver: bridge
+volumes:
+  prom-data:
+  loki-data:
+  grafana-data:

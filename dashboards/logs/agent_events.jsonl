@@ -1,0 +1,6 @@
+{"type":"prompt_injection_detected","agent_id":"agent-support"}
+{"type":"prompt_injection_neutralized","agent_id":"agent-support"}
+{"type":"token_replay","agent_id":"agent-transfer"}
+{"type":"invariant_violation","agent_id":"agent-loan"}
+{"type":"anomaly","agent_id":"agent-branchless"}
+{"risk":"high","agent_id":"agent-transfer","action":"transfer_funds"}

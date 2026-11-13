@@ -1,0 +1,3 @@
+{"decision":"allow","reason":"benign_read","agent_id":"agent-teller","timestamp":"2026-01-15T10:00:00Z"}
+{"decision":"deny","reason":"amount_exceeds_limit","agent_id":"agent-transfer","timestamp":"2026-01-15T10:00:05Z"}
+{"decision":"deny","reason":"token_expired","agent_id":"agent-transfer","timestamp":"2026-01-15T10:00:10Z"}
